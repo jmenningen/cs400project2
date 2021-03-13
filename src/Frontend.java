@@ -7,6 +7,8 @@ public class Frontend {
     private BackendDummy backend = null;
     private final String[][] nutritionMenu;
     private final int maxLength = 50;
+    private final String[] units = {"kcal", "g", "g", "g"};
+    private final String[] nutritionCategories = {"CALORIES", "FAT", "CARBS", "PROTEIN"};
 
     /**
      * This is the main method and automatically runs the application when the file is ran
@@ -83,11 +85,10 @@ public class Frontend {
      * Constructor that builds the nutrition menu for use in the application
      */
     public Frontend() {
-        String[] nutritionCategories = {"CALORIES", "FAT", "CARBS", "PROTEIN"};
-        this.nutritionMenu = new String[nutritionCategories.length][2];
+        this.nutritionMenu = new String[this.nutritionCategories.length][2];
         for (int i = 0; i < nutritionMenu.length; i++) {
             this.nutritionMenu[i][0] = (i < 9) ? ("0" + (i + 1) + ".") : ((i+1) + ".");
-            this.nutritionMenu[i][1] = nutritionCategories[i] + " ".repeat(12 - nutritionCategories[i].length());
+            this.nutritionMenu[i][1] = this.nutritionCategories[i] + " ".repeat(12 - this.nutritionCategories[i].length());
         }
     }
 
@@ -113,12 +114,27 @@ public class Frontend {
      */
     private void showWelcomeMessage() {
         System.out.println("=".repeat(this.maxLength));
-        System.out.println(" ".repeat(13) + "WELCOME TO CALORIE WATCH" + " ".repeat(this.maxLength));
+        String message = "WELCOME TO CALORIE WATCH";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
+        message = "This application lets you watch";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
+        message = "for different types of nutrition.";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
+        message = "You can search for foods with a";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
+        message = "specific value of nutrition you";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
+        message = "want and it will return the three";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
+        message = "closest foods. You can also search";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
+        message = "a specific range that you want.";
+        System.out.println( " ".repeat((this.maxLength - message.length())/2) + message + " ".repeat((this.maxLength - message.length())/2));
         System.out.println("=".repeat(this.maxLength));
     }
 
     /**
-     * Simple method displays an exit message when the user exits the application
+     * Simple method that displays an exit message when the user exits the application
      */
     private void showExitMessage() {
         System.out.println("=".repeat(this.maxLength));
@@ -137,7 +153,7 @@ public class Frontend {
 
     /**
      * This method displays the nutrition menu formatted such that the categories are displayed in a
-     * 2*n matrix, where n is the number of nutritional categories, in this application n = 4
+     * 2*(n/2) matrix, where n is the number of nutritional categories, in this application n = 4
      */
     private void showNutritionMenu() {
         System.out.println("\nNutrition Categories: ");
@@ -164,19 +180,21 @@ public class Frontend {
      * This method displays a menu to the user that they are now in their selected
      * nutritional category mode
      *
-     * @param category is a string of the nutritional category that the user selected
+     * @param i is an int corresponding to chosen category
      */
-    private void showSelectionMenu(String category) {
+    private void showSelectionMenu(int i) {
         System.out.println();
-        String message = "[ Welcome to " + category.toUpperCase(Locale.ROOT) +  " MODE";
+        String message = "[ Welcome to " + this.nutritionCategories[i] +  " MODE";
         System.out.println(message + " ".repeat(this.maxLength - message.length() - 1) + "]");
-        message = "[ Please enter your desired value as an integer";
+        message = "[ " + this.nutritionCategories[i] + " MODE uses units of (" + this.units[i] + ")";
         System.out.println(message + " ".repeat(this.maxLength - message.length() - 1) + "]");
-        message = "[ A range can be selected by entering 'int-int'";
+        message = "[ - Please enter value as an int or float";
         System.out.println(message + " ".repeat(this.maxLength - message.length() - 1) + "]");
-        message = "[ Enter 'h' to show this message again";
+        message = "[ - Select range by entering 'num1-num2'";
         System.out.println(message + " ".repeat(this.maxLength - message.length() - 1) + "]");
-        message = "[ Enter 'x' to exit selection mode";
+        message = "[ - Enter 'h' to show this message again";
+        System.out.println(message + " ".repeat(this.maxLength - message.length() - 1) + "]");
+        message = "[ - Enter 'x' to exit selection mode";
         System.out.println(message + " ".repeat(this.maxLength - message.length() - 1) + "]");
     }
 
@@ -188,7 +206,7 @@ public class Frontend {
      */
     private void selectionMode(int i, Scanner scnr) throws Exception {
         // Display the menu to the user and get their enum category
-        showSelectionMenu(this.nutritionMenu[i - 1][1].trim());
+        showSelectionMenu(i - 1);
         BackendInterface.RequestType category = this.getCategory(i - 1);
 
         String cmd = null; // command that the user enters
@@ -205,7 +223,7 @@ public class Frontend {
                 } else if (cmd.equals("x")) { // x = exit selection mode by breaking the loop
                     break;
                 } else if (cmd.equals("h")) { // displays menu again to help the user
-                    this.showSelectionMenu(this.nutritionMenu[i-1][1].trim());
+                    this.showSelectionMenu(i - 1);
                 } else {
                     // Try-catch block to see if user entered 'int' or 'int1-int2' properly
                     try {
@@ -213,8 +231,8 @@ public class Frontend {
                         // 'int-int' and not something like 'int-int-'
                         if (cmd.contains("-")) {
                             String[] range = cmd.split("-", 2);
-                            int minRange = Integer.parseInt(range[0]);
-                            int maxRange = Integer.parseInt(range[1]);
+                            float minRange = Float.parseFloat(range[0]);
+                            float maxRange = Float.parseFloat(range[1]);
                             // if they entered a range where the second number is less than the first
                             // tell the user how to properly enter their range
                             if (minRange > maxRange) {
@@ -222,8 +240,8 @@ public class Frontend {
                                 throw new NumberFormatException();
                             }
                             this.showSelections(this.backend.getClosestMenuItems(category, minRange, 0)); // TODO change this to work with corresponding method in backend
-                        } else if (Integer.parseInt(cmd) >= 0) // if they didn't input range they possibly inputted an int
-                            this.showSelections(this.backend.getClosestMenuItems(category, Integer.parseInt(cmd),1)); // TODO change this to work with corresponding method in backend
+                        } else if (Float.parseFloat(cmd) >= 0) // if they didn't input range they possibly inputted an int
+                            this.showSelections(this.backend.getClosestMenuItems(category, Float.parseFloat(cmd),1)); // TODO change this to work with corresponding method in backend
                     } catch (NumberFormatException e1) { // catch any invalid formatting from the user and display error message
                         this.showErrorMessage();
                     }
@@ -250,14 +268,14 @@ public class Frontend {
             String message;
             for (MenuItemInterface menuItem : menuList) {
                 System.out.println("\n" + menuItem.getName());
-                message = "Calories: ";
-                System.out.println(".".repeat(15 - message.length()) + message + menuItem.getCalories());
-                message = "Fats: ";
-                System.out.println(".".repeat(15 - message.length()) + message  + menuItem.getFats());
-                message = "Carbs: ";
-                System.out.println(".".repeat(15 - message.length()) + message  + menuItem.getCarbs());
-                message = "Proteins: ";
-                System.out.println(".".repeat(15 - message.length()) + message  + menuItem.getProteins());
+                message = "Calories (kcal): ";
+                System.out.println(".".repeat(20 - message.length()) + message + menuItem.getCalories());
+                message = "Fats (g): ";
+                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.getFats());
+                message = "Carbs (g): ";
+                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.getCarbs());
+                message = "Proteins (g): ";
+                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.getProteins());
             }
         }
     }
