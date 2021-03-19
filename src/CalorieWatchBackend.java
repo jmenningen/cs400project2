@@ -155,5 +155,4 @@ public class CalorieWatchBackend {
     return menuMap.containsKey(name) ? 
            menuMap.get(name) : null;
   }
-
 }
