@@ -1,38 +1,68 @@
-import java.util.LinkedList;
+// --== CS400 File Header Information ==--
+// Name: Humza Ayub
+// Email: hayub@wisc.edu
+// Team: Blue
+// Role: Frontend Developer
+// TA: Dan Kiel
+// Lecturer: Gary Dahl
+// Notes to Grader: <optional extra notes>
+
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
 
 public class BackendDummy implements BackendInterface {
 
-    public enum RequestType {
-        CALORIES,
-        FATS,
-        CARBS,
-        PROTEINS
-    }
+    private List<Item> dummyMenuList = new LinkedList<>(Arrays.asList(new Item("Hamburger", 50, 50, 50, 50),
+                                                                      new Item("Hot Dog", 100,100,100,100),
+                                                                      new Item("Donut", 150,150,150,150),
+                                                                      new Item("French Fries", 50, 100, 150, 75)));
 
-    private List <MenuItemInterface> dummyMenuList;
+    private List<Item> userMenuList = new LinkedList<>();
+    private double min;
+    private double max;
+    private Nutr nutr;
 
-    public BackendDummy() {
-        this.dummyMenuList = new LinkedList<MenuItemInterface>();
-        this.dummyMenuList.add(new MenuItemDummy("Hamburger", 100, 100, 100, 100));
-        this.dummyMenuList.add(new MenuItemDummy("Hot Dog", 100,100,100,100));
-        this.dummyMenuList.add(new MenuItemDummy("Donut", 100,100,100,100));
+    @Override
+    public void setRanges(Nutr nutr, double min, double max) {
+        this.min = min;
+        this.max = max;
+        this.nutr = nutr;
     }
 
     @Override
-    public List<MenuItemInterface> getClosestMenuItems(BackendInterface.RequestType type, float target, int numberOfResults) {
-        return dummyMenuList;
+    public List<Item> getSelectedMenu(int start) {
+        return this.userMenuList;
     }
 
     @Override
-    public int getMenuSize() {
-        return 0;
-    }
+    public void generateMenu() {
+        this.userMenuList.clear();
 
-    @Override
-    public MenuItemInterface getSpecificMenuItem(String name) {
-        return null;
-    }
+        for (Item item : dummyMenuList) {
+            if (item.get(nutr) >= this.min && item.get(nutr) <= this.max) {
+                this.userMenuList.add(item);
+            }
+        }
 
+        if (this.min == this.max && this.userMenuList.size() < 3) {
+            List<Item> dummyList = new LinkedList<>();
+            for (Item item : dummyMenuList) {
+                if (!this.userMenuList.contains(item)) {
+                    dummyList.add(item);
+                }
+            }
+
+            Collections.sort(dummyList, (o1,o2) -> {
+                Double x = Math.abs(this.max - o1.get(nutr));
+                Double y = Math.abs(this.max - o2.get(nutr));
+                return x.compareTo(y);
+            });
+
+            int i = 0;
+            while (this.userMenuList.size() < 3) {
+                this.userMenuList.add(dummyList.get(i++));
+            }
+
+        }
+    }
 }

@@ -1,10 +1,17 @@
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+// --== CS400 File Header Information ==--
+// Name: Humza Ayub
+// Email: hayub@wisc.edu
+// Team: Blue
+// Role: Frontend Developer
+// TA: Dan Kiel
+// Lecturer: Gary Dahl
+// Notes to Grader: <optional extra notes>
+
+import java.util.*;
 
 public class Frontend {
 
-    private BackendDummy backend = null;
+    private BackendInterface backend = null;
     private final String[][] nutritionMenu;
     private final int maxLength = 50;
     private final String[] units = {"kcal", "g", "g", "g"};
@@ -12,15 +19,22 @@ public class Frontend {
 
     /**
      * This is the main method and automatically runs the application when the file is ran
-     * @param args Contains filepath if specified in command line TODO may or may not be needed
+     * @param args Contains filepath if specified in command line TODO may or may not be needed depending on other people's implementation
      */
     public static void main(String[] args) {
-        // May or not be needed depending on how we implement the data reader
+        // May or not be needed depending on how we implement the data reader TODO
         //String filePath = "test.csv";
         //if (args.length > 0)
         //    filePath = args[0];
         try {
-            run();
+            // TODO remove dummyList and pass the data wrangler list in real implementation
+            List<Item> dummyMenuList = new LinkedList<Item>();
+            dummyMenuList.add(new Item("Hamburger", 50, 50, 50, 50));
+            dummyMenuList.add(new Item("Hot Dog", 100,100,100,100));
+            dummyMenuList.add(new Item("Donut", 150,150,150,150));
+            dummyMenuList.add(new Item("French Fries", 50, 100, 150, 75));
+            run(new CalorieWatchBackend(dummyMenuList));
+            //run(new BackendDummy()); // TODO remove in final implementation
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -32,9 +46,8 @@ public class Frontend {
      *
      * @throws Exception temporary for testing purposes TODO possibly remove
      */
-    public static void run() throws Exception {
+    public static void run(BackendInterface backend) throws Exception {
         // Initialize the backend and frontend
-        BackendDummy backend = new BackendDummy();
         Frontend frontend = new Frontend();
         frontend.backend = backend;
 
@@ -153,10 +166,10 @@ public class Frontend {
 
     /**
      * This method displays the nutrition menu formatted such that the categories are displayed in a
-     * 2*(n/2) matrix, where n is the number of nutritional categories, in this application n = 4
+     * 2x2 matrix
      */
     private void showNutritionMenu() {
-        System.out.println("\nNutrition Categories: ");
+        System.out.println("\nNutrition Categories:");
         int half;
 
         if (this.nutritionMenu.length % 2 == 0)
@@ -207,7 +220,7 @@ public class Frontend {
     private void selectionMode(int i, Scanner scnr) throws Exception {
         // Display the menu to the user and get their enum category
         showSelectionMenu(i - 1);
-        BackendInterface.RequestType category = this.getCategory(i - 1);
+        Nutr category = this.getCategory(i - 1);
 
         String cmd = null; // command that the user enters
         // loop that runs the selection mode
@@ -231,17 +244,22 @@ public class Frontend {
                         // 'int-int' and not something like 'int-int-'
                         if (cmd.contains("-")) {
                             String[] range = cmd.split("-", 2);
-                            float minRange = Float.parseFloat(range[0]);
-                            float maxRange = Float.parseFloat(range[1]);
+                            double minRange = Double.parseDouble(range[0]);
+                            double maxRange = Double.parseDouble((range[1]));
                             // if they entered a range where the second number is less than the first
                             // tell the user how to properly enter their range
-                            if (minRange > maxRange) {
+                            if (minRange >= maxRange) {
                                 System.out.println("Please enter range as 'x-y', where x < y!");
                                 throw new NumberFormatException();
                             }
-                            this.showSelections(this.backend.getClosestMenuItems(category, minRange, 0)); // TODO change this to work with corresponding method in backend
-                        } else if (Float.parseFloat(cmd) >= 0) // if they didn't input range they possibly inputted an int
-                            this.showSelections(this.backend.getClosestMenuItems(category, Float.parseFloat(cmd),1)); // TODO change this to work with corresponding method in backend
+                            this.backend.setRanges(category, minRange, maxRange); // set the range for the backend
+                        } else if (Double.parseDouble(cmd) >= 0) {
+                            // if they didn't input range they possibly inputted an int
+                            this.backend.setRanges(category, Double.parseDouble(cmd), Double.parseDouble(cmd)); // set the range for the backend
+                        }
+                        // generate the menu in the backend, and then pass the menu to showSelections()
+                        this.backend.generateMenu();
+                        this.showSelections(this.backend.getSelectedMenu(0));
                     } catch (NumberFormatException e1) { // catch any invalid formatting from the user and display error message
                         this.showErrorMessage();
                     }
@@ -259,23 +277,24 @@ public class Frontend {
      *
      * @param menuList is a list that contains all the menu items that were fetched from the backend
      */
-    private void showSelections(List<MenuItemInterface> menuList) {
+    private void showSelections(List<Item> menuList) {
         // If list is empty, then tell user there is no menu items that they want
         if (menuList.isEmpty()) {
             System.out.println("No menu items within that range!");
         } else {
-            // for every menuItem in the list display it to the user in a nicely formatted way
             String message;
-            for (MenuItemInterface menuItem : menuList) {
+            menuList.sort(Comparator.comparing(Item::getName)); // Sort the list in alphabetical order
+            // for every menuItem in the list display it to the user in a nicely formatted way
+            for (Item menuItem : menuList) {
                 System.out.println("\n" + menuItem.getName());
                 message = "Calories (kcal): ";
-                System.out.println(".".repeat(20 - message.length()) + message + menuItem.getCalories());
+                System.out.println(".".repeat(20 - message.length()) + message + menuItem.get(Nutr.CALORIE));
                 message = "Fats (g): ";
-                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.getFats());
+                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.get(Nutr.FAT));
                 message = "Carbs (g): ";
-                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.getCarbs());
+                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.get(Nutr.CARB));
                 message = "Proteins (g): ";
-                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.getProteins());
+                System.out.println(".".repeat(20 - message.length()) + message  + menuItem.get(Nutr.PROTEIN));
             }
         }
     }
@@ -287,15 +306,15 @@ public class Frontend {
      * @param i is an int that corresponds to the category the user selected
      * @return the RequestType that the user selected
      */
-    private BackendInterface.RequestType getCategory(int i) {
+    private Nutr getCategory(int i) {
         if (i == 0) {
-            return BackendInterface.RequestType.CALORIES;
+            return Nutr.CALORIE;
         } else if (i == 1) {
-            return BackendInterface.RequestType.FATS;
+            return Nutr.FAT;
         } else if (i == 2) {
-            return BackendInterface.RequestType.CARBS;
+            return Nutr.CARB;
         } else {
-            return BackendInterface.RequestType.PROTEINS;
+            return Nutr.PROTEIN;
         }
     }
 }
