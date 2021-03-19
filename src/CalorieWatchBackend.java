@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
-public class CalorieWatchBackend {
+public class CalorieWatchBackend implements BackendInterface{
   
   /* data fields: Five Red Black Trees to store data */
   private HashMap<String, Item> menuMap;
