@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
-public class CalorieWatchBackend implements BackendInterface {
+public class CalorieWatchBackend {
   
   /* data fields: Five Red Black Trees to store data */
   private HashMap<String, Item> menuMap;
@@ -155,5 +155,4 @@ public class CalorieWatchBackend implements BackendInterface {
     return menuMap.containsKey(name) ? 
            menuMap.get(name) : null;
   }
-
 }
