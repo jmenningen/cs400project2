@@ -28,12 +28,8 @@ public class Frontend {
         //    filePath = args[0];
         try {
             // TODO remove dummyList and pass the data wrangler list in real implementation
-            List<Item> dummyMenuList = new LinkedList<Item>();
-            dummyMenuList.add(new Item("Hamburger", 50, 50, 50, 50));
-            dummyMenuList.add(new Item("Hot Dog", 100,100,100,100));
-            dummyMenuList.add(new Item("Donut", 150,150,150,150));
-            dummyMenuList.add(new Item("French Fries", 50, 100, 150, 75));
-            run(new CalorieWatchBackend(dummyMenuList));
+            MealReader mealReader = new MealReader("ians_menu_table.txt");
+            run(new CalorieWatchBackend(mealReader.getMealList()));
             //run(new BackendDummy()); // TODO remove in final implementation
         } catch (Exception e1) {
             e1.printStackTrace();
