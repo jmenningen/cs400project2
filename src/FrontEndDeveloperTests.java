@@ -3,7 +3,7 @@
 // Email: hayub@wisc.edu 
 // Team: Blue 
 // Role: Frontend Developer
-// TA: Dan Kiel
+// TA: Daniel Kiel
 // Lecturer: Gary Dahl
 // Notes to Grader: <optional extra notes>
 

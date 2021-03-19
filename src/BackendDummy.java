@@ -3,7 +3,7 @@
 // Email: hayub@wisc.edu
 // Team: Blue
 // Role: Frontend Developer
-// TA: Dan Kiel
+// TA: Daniel Kiel
 // Lecturer: Gary Dahl
 // Notes to Grader: <optional extra notes>
 
@@ -17,7 +17,7 @@ public class BackendDummy implements BackendInterface {
                                                                       new Item("Donut", 150,150,150,150),
                                                                       new Item("French Fries", 50, 100, 150, 75)));
 
-    private List<Item> userMenuList = new LinkedList<>();
+    private List<Item> userMenuList = new ArrayList<>();
     private double min;
     private double max;
     private Nutr nutr;
@@ -64,5 +64,12 @@ public class BackendDummy implements BackendInterface {
             }
 
         }
+    }
+
+    @Override
+    public ArrayList<Item> getClosestMenu(Nutr nutr, double val) {
+        this.setRanges(nutr, val, val);
+        this.generateMenu();
+        return (ArrayList<Item>) getSelectedMenu(0);
     }
 }

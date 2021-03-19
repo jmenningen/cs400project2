@@ -115,13 +115,46 @@ public class CalorieWatchBackend implements BackendInterface{
   }
   
   /**
+   * @param nutr user's selected nutrition
+   * @param val  a specific value the user selects
+   */
+  public ArrayList<Item> getClosestMenu(Nutr nutr, double val) {
+    nutrType = nutr.ordinal();
+    
+    // create a RedBlackTree with a comparator of value difference
+    RedBlackTree<Item> tree = new RedBlackTree<Item>(
+        (c1, c2) -> ((Double)(Math.abs(c1.get(nutr) - val)))
+        .compareTo(Math.abs(c2.get(nutr) - val))
+        );
+    database.stream().forEach(item -> tree.insert(item));
+    
+    // create a RedBlackTree to sort the result
+    RedBlackTree<Item> sort = new RedBlackTree<Item>(
+        (c1, c2) -> (c1.get(nutr)).compareTo(c2.get(nutr)));
+    
+    double error = 0.00001;  // used to check double values equality
+    
+    for (Item item : tree.toArrayList()) {
+      // find a new value
+      if (Math.abs(item.get(nutr) - val) > error) {
+        if (sort.size() >= 3) break;             // if there is enough items, break
+        error = Math.abs(item.get(nutr) - val);  // else, update error
+      }
+      // DO NOT change the following condition to `else`
+      if (Math.abs(item.get(nutr) - val) <= error)
+        sort.insert(item);
+    }
+    return sort.toArrayList();
+  }
+  
+  /**
    * generate a list of menu that matches user's input
    */
   public void generateMenu() {
     int i = nutrType;
     Item min = createDummyItem(usrMin[i]);
     Item max = createDummyItem(usrMax[i]);
-    result = trees.get(i).getRange(min, max);
+    result = trees.get(i).subSet(min, max);
   }
   
   /** create a dummy item holds a min/max value */

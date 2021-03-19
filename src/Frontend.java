@@ -3,7 +3,7 @@
 // Email: hayub@wisc.edu
 // Team: Blue
 // Role: Frontend Developer
-// TA: Dan Kiel
+// TA: Daniel Kiel
 // Lecturer: Gary Dahl
 // Notes to Grader: <optional extra notes>
 
@@ -27,7 +27,11 @@ public class Frontend {
         //if (args.length > 0)
         //    filePath = args[0];
         try {
+<<<<<<< Updated upstream
             // TODO remove dummyList and pass the data wrangler list in real implementation
+=======
+
+>>>>>>> Stashed changes
             MealReader mealReader = new MealReader("ians_menu_table.txt");
             run(new CalorieWatchBackend(mealReader.getMealList()));
             //run(new BackendDummy()); // TODO remove in final implementation
@@ -78,6 +82,8 @@ public class Frontend {
                         if (Integer.parseInt(cmd) >= 1 && Integer.parseInt(cmd) <= frontend.nutritionMenu.length) {
                             frontend.selectionMode(Integer.parseInt(cmd), scnr);
                             frontend.showBaseMode();
+                        } else {
+                            frontend.showErrorMessage();
                         }
                     } catch (NumberFormatException e1) { // parseInt() throws NumberFormatException if there is no int
                         frontend.showErrorMessage();
@@ -249,13 +255,13 @@ public class Frontend {
                                 throw new NumberFormatException();
                             }
                             this.backend.setRanges(category, minRange, maxRange); // set the range for the backend
+                            this.backend.generateMenu();
+                            this.showSelections(this.backend.getSelectedMenu(0));
                         } else if (Double.parseDouble(cmd) >= 0) {
                             // if they didn't input range they possibly inputted an int
-                            this.backend.setRanges(category, Double.parseDouble(cmd), Double.parseDouble(cmd)); // set the range for the backend
+                            this.showSelections(this.backend.getClosestMenu(category, Double.parseDouble(cmd)));
                         }
                         // generate the menu in the backend, and then pass the menu to showSelections()
-                        this.backend.generateMenu();
-                        this.showSelections(this.backend.getSelectedMenu(0));
                     } catch (NumberFormatException e1) { // catch any invalid formatting from the user and display error message
                         this.showErrorMessage();
                     }

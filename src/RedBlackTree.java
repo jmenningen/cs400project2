@@ -389,13 +389,45 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
     return pred;
   }
   
+  /** return an ArrayList of T of all objects in this tree */
+  public ArrayList<T> toArrayList() {
+    ArrayList<T> list = new ArrayList<>(size);
+    toListHelper(list, root);
+    return list;
+  }
   
-  public ArrayList<T> getRange(T min, T max) {
+  private void toListHelper(ArrayList<T> list, Node<T> curr) {
+    if (curr == null) return;
+    
+    if (curr.leftChild != null)
+      toListHelper(list, curr.leftChild);
+    
+    list.add(curr.data);
+    
+    if (curr.rightChild != null)
+      toListHelper(list, curr.rightChild);
+  }
+  
+  
+  /**
+   * @param min - minimum value (inclusive) of searching range
+   * @param max - maximum value (inclusive) of searching range
+   * @return an ArrayList of elements within range
+   */
+  public ArrayList<T> subSet(T min, T max) {
     ArrayList<T> list = new ArrayList<>();
     helper(root, list, min, max);
     return list;
   }
   
+  /**
+   * helper method of subSet()
+   * <p>
+   * @param curr - current node to check
+   * @param list - an ArrayList storing all elements within range
+   * @param min - minimum value (inclusive) of searching range
+   * @param max - maximum value (inclusive) of searching range
+   */
   private void helper(Node<T> curr, ArrayList<T> list, T min, T max) {
     if (curr == null) return;
     
