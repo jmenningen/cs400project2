@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
-public class CalorieWatchBackend implements BackendInterface{
+public class CalorieWatchBackend implements BackendInterface {
   
   /* data fields: Five Red Black Trees to store data */
   private HashMap<String, Item> menuMap;
@@ -132,17 +132,19 @@ public class CalorieWatchBackend implements BackendInterface{
     RedBlackTree<Item> sort = new RedBlackTree<Item>(
         (c1, c2) -> (c1.get(nutr)).compareTo(c2.get(nutr)));
     
-    double error = 0.00001;  // used to check double values equality
+    final double ERROR = 0.0001;  // help to check equality of double values
+    double offset = 0.0;          // help to detect a new value
     
     for (Item item : tree.toArrayList()) {
-      // find a new value
-      if (Math.abs(item.get(nutr) - val) > error) {
-        if (sort.size() >= 3) break;             // if there is enough items, break
-        error = Math.abs(item.get(nutr) - val);  // else, update error
+      // absolute value between nutrition value and searching key
+      double diff = Math.abs(item.get(nutr) - val);
+      
+      // if a new value is found
+      if (diff - offset >= ERROR) {
+        if (sort.size() >= 3) break;  // if there are enough items -> break
+        offset = diff;                // else, update offset
       }
-      // DO NOT change the following condition to `else`
-      if (Math.abs(item.get(nutr) - val) <= error)
-        sort.insert(item);
+      sort.insert(item);  // add matched item
     }
     return sort.toArrayList();
   }
@@ -188,4 +190,5 @@ public class CalorieWatchBackend implements BackendInterface{
     return menuMap.containsKey(name) ? 
            menuMap.get(name) : null;
   }
+
 }

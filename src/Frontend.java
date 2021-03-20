@@ -7,6 +7,7 @@
 // Lecturer: Gary Dahl
 // Notes to Grader: <optional extra notes>
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Frontend {
@@ -19,24 +20,19 @@ public class Frontend {
 
     /**
      * This is the main method and automatically runs the application when the file is ran
-     * @param args Contains filepath if specified in command line TODO may or may not be needed depending on other people's implementation
+     * @param args
      */
     public static void main(String[] args) {
-        // May or not be needed depending on how we implement the data reader TODO
-        //String filePath = "test.csv";
-        //if (args.length > 0)
-        //    filePath = args[0];
         try {
-<<<<<<< Updated upstream
-            // TODO remove dummyList and pass the data wrangler list in real implementation
-=======
 
->>>>>>> Stashed changes
             MealReader mealReader = new MealReader("ians_menu_table.txt");
             run(new CalorieWatchBackend(mealReader.getMealList()));
-            //run(new BackendDummy()); // TODO remove in final implementation
-        } catch (Exception e1) {
-            e1.printStackTrace();
+        }  catch (FileNotFoundException e1) {
+            System.out.println("File was not found!");
+        } catch (IllegalArgumentException e2) {
+            System.out.println("File not read correctly.");
+        } catch (Exception e3) {
+            e3.printStackTrace();
         }
     }
 
@@ -44,7 +40,7 @@ public class Frontend {
      * This method is responsible for running the entire application that the user interacts with in order to
      * keep track of any nutritional values they might be interested in
      *
-     * @throws Exception temporary for testing purposes TODO possibly remove
+     * @throws Exception any exception encountered will trigger a printStackTrace()
      */
     public static void run(BackendInterface backend) throws Exception {
         // Initialize the backend and frontend
@@ -217,7 +213,7 @@ public class Frontend {
      * This method implements the selection mode that the user inputted
      * @param i is an int that corresponds to the category the user chose
      * @param scnr is a Scanner passed from the run() method
-     * @throws Exception temporary that will be edited for more specific exceptions TODO
+     * @throws Exception any exception encountered will trigger a printStackTrace()
      */
     private void selectionMode(int i, Scanner scnr) throws Exception {
         // Display the menu to the user and get their enum category
