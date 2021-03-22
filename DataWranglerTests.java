@@ -22,7 +22,7 @@ public class DataWranglerTests {
 	public void testReaderNumberOfMeals() {
 		MealReader readerToTest = new MealReader("ians_menu_table.txt");
 		try {
-			LinkedList<MealInterface> mealList = readerToTest.getMealList();
+			LinkedList<Item> mealList = readerToTest.getMealList();
 			assertEquals(52, mealList.size(), "Test reader number of meals failed.");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -39,7 +39,7 @@ public class DataWranglerTests {
 	@Test
 	public void testReaderMealNames() {
 		MealReader readerToTest = new MealReader("ians_menu_table.txt");
-		LinkedList<MealInterface> mealList = readerToTest.getMealList(); 
+		LinkedList<Item> mealList = readerToTest.getMealList();
 		
 		String name1 = "Bread Crumbs";
 		String name2 = "Gluten Free Panko Breadcrumbs";
@@ -48,7 +48,7 @@ public class DataWranglerTests {
 		assertEquals(name1, mealList.get(0).getName(), "Test reader meal names failed.");
 		assertEquals(name2, mealList.get(2).getName(), "Test reader meal names failed.");
 		assertEquals(name3, mealList.get(3).getName(), "Test reader meal names failed.");
-	
+		readerToTest.displayList();
 	}
 
 	/*
@@ -58,32 +58,33 @@ public class DataWranglerTests {
 	@Test
 	public void testReaderInternalMethods() {
 		
-		boolean passed = true;
-		Meal meal1 = new Meal("Cheese pizza", "557", "32.0g", "12.0g", "7345.4g", "3.0g", "3.33g", "3.56g", "6.0g", "5.0g", "12.0g");
+		boolean passed = true; // name, cals, fat, carbs, protein
+		Item item1 = new Item("Cheese pizza", 305, 9.0, 33.4, 4.3);
 	
-		if (meal1.getName() != "Cheese pizza") {
+		if (item1.getName() != "Cheese pizza") {
 			System.out.println("Incorrect name.");
 			passed = false;
 		}
-		if (meal1.getCals() != 557) {
+		if (item1.get(Nutr.CALORIE) != 305) {
 			System.out.println("Incorrect calorie count.");
 			passed = false;
 		} 	
-		if (meal1.getFats() != 32.0) {
+		if (item1.get(Nutr.FAT) != 9.0) {
 			System.out.println("Incorrect fat count.");
 			passed = false;
 		} 	
-		if (meal1.getSugar() != 12.0) {
-			System.out.println("Incorrect sugar count.");
+		if (item1.get(Nutr.CARB) != 33.4) {
+			System.out.println("Incorrect carb count.");
 			passed = false;
 		} 	 
-		if (meal1.getProtein() != 3.0) {
+		if (item1.get(Nutr.PROTEIN) != 4.3) {
 			System.out.println("Incorrect protein count.");
 			passed = false;
 		} 	
 		assertEquals(true, passed, "Test reader internal methods failed.");
+	
 	}
-
+	
 	/*
 	 * This tests whether the menu reader works with other menus, not just "ians_menu_table.txt"
 	 * Other menus can be tested at the website https://secretmenus.com
@@ -91,25 +92,25 @@ public class DataWranglerTests {
 	@Test
 	public void testOtherMenu() {
 		MealReader readerToTest = new MealReader("taco_bell.txt");
-		LinkedList<MealInterface> mealList = readerToTest.getMealList();
-		readerToTest.displayList(); // --> displays correctly
+		LinkedList<Item> mealList = readerToTest.getMealList();
+		//readerToTest.displayList(); // --> displays correctly
 		assertEquals(87, mealList.size(), "Incorrect size for taco bell menu.");
 	}	
 	
 	/*
-	 * This test reads in 4 meals and tests whether the list of meals returned is in the expected order.
+	 * This test reads in several meals and tests whether the list of meals returned is in the expected order.
 	 * It fails if it is not in order or if an exception occurs while reading in the meals.
 	 */
 	@Test
 	public void testReaderMealOrder() {
 		MealReader readerToTest = new MealReader("ians_menu_table.txt");
-		LinkedList<MealInterface> mealList = readerToTest.getMealList();
+		LinkedList<Item> mealList = readerToTest.getMealList();
 		
-		LinkedList<MealInterface> testList = new LinkedList<MealInterface>();
-		testList.add(new Meal("Bread Crumbs", "427.0", "5.72g", "0.0g", "77.74g", "14.42g", "0.0g","0.0g","0.0g","0.0g","0.0g"));
-		testList.add(new Meal("Panko Breadcrumbs – Whole Wheat Style", "70.0", "0.5g", "0.0g", "14.0g", "3.0g", "0.0g","0.0g","0.0g","0.0g","0.0g"));
-		testList.add(new Meal("Gluten Free Panko Breadcrumbs", "70.0", "0.0g", "0.0g", "16.0g", "1.0g", "0.0g","0.0g","0.0g","0.0g","0.0g"));
-		testList.add(new Meal("Bread", "70.0", "0.0g", "0.0g", "16.0g", "1.0g", "0.0g","0.0g","0.0g","0.0g","0.0g"));
+		LinkedList<Item> testList = new LinkedList<Item>();
+		testList.add(new Item("Bread Crumbs", 427.0, 5.7, 77.7, 14.4));
+		testList.add(new Item("Panko Breadcrumbs Whole Wheat Style", 70.0, 0.5, 14.0, 3.0));
+		testList.add(new Item("Gluten Free Panko Breadcrumbs", 70.0, 0.0, 1.0, 0.0));
+		testList.add(new Item("Bread", 69.0, .8, 13.1, 1.9));
 
 		if (!mealList.get(0).getName().equals(testList.get(0).getName())) {
 			fail("Meals are not in correct order.");
@@ -121,8 +122,9 @@ public class DataWranglerTests {
 			fail("Meals are not in correct order.");
 		}
 		
-
 	}
 
 }//end testing
+
+
 
